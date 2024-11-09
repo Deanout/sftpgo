@@ -1,0 +1,18 @@
+<p style="color: green"><%= notice %></p>
+<% content_for :title, "Posts" %>
+<h1>Posts</h1>
+<% if Rails.env.production? %>
+  <%= link_to "SFTP", "http://busidevs.com:8080" %>
+<% else %>
+  <p style="color: red">You're in development mode</p>
+  <%= link_to "SFTP", "http://localhost:8080" %>
+<% end %>
+<div id="posts">
+  <% @posts.each do |post| %>
+    <%= render post %>
+    <p>
+      <%= link_to "Show this post", post %>
+    </p>
+  <% end %>
+</div>
+<%= link_to "New post", new_post_path %>

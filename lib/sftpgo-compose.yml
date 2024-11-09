@@ -1,0 +1,38 @@
+version: "3.7"
+# Test
+services:
+  sftpgo:
+    image: drakkan/sftpgo:latest
+    container_name: sftpgo
+    user: root:root
+    ports:
+      - "2022:2022" # SFTP/SCP/FTP(S) service port
+      - "8080:8080" # Web admin UI and REST API port
+    volumes:
+      - sftpgo_data:/var/lib/sftpgo
+      - sftpgo_logs:/var/log/sftpgo
+      - "/var/lib/docker/volumes:/home/sftpgo/game_volumes"
+      - "/mnt/wsl/docker-desktop-data/version-pack-data/community/docker/volumes:/home/sftpgo/wsl_volumes"
+      # Mount Rails storage for SFTP uploads
+      - "../storage:/home/sftpgo/rails_storage"
+      - "../:/home/sftpgo/rails"
+    environment:
+      - SFTPGO_HTTPD__BINDINGS__0__PORT=8080
+      - SFTPGO_HTTPD__BINDINGS__0__ADDRESS=0.0.0.0
+      - SFTPGO_SFTPD__BINDINGS__0__PORT=2022
+      - SFTPGO_SFTPD__BINDINGS__0__ADDRESS=0.0.0.0
+      - SFTPGO_PROVIDER__DATA_PROVIDER__DRIVER=sqlite3
+      - SFTPGO_PROVIDER__DATA_PROVIDER__DB_NAME=/var/lib/sftpgo/sftpgo.db
+      - SFTPGO_DATA_PROVIDER__CREATE_DEFAULT_ADMIN=true
+      #  Used for test/dev purposes only, change it in production
+      - SFTPGO_DEFAULT_ADMIN_USERNAME=admin
+      - SFTPGO_DEFAULT_ADMIN_PASSWORD=password123
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: "5m"
+volumes:
+  sftpgo_data:
+    driver: local
+  sftpgo_logs:
+    driver: local
